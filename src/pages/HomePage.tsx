@@ -15,7 +15,6 @@ import { FilterBar } from "@/components/FilterBar";
 import { AboutDialog } from "@/components/AboutDialog";
 import { TermsDialog } from "@/components/TermsDialog";
 import { type Filters } from '@/lib/types';
-import { ReportButton } from "@/components/ReportButton";
 
 // Custom icons for different categories
 const categoryIcons = {
@@ -324,17 +323,6 @@ export default function HomePage() {
     setSelectedSpot(null);
     if (mapRef.current) {
       mapRef.current.closePopup();
-    }
-  };
-
-  // העברת loadSpots לפונקציה רגילה שתהיה זמינה בכל הקומפוננטה
-  const refreshSpots = async () => {
-    try {
-      const allSpots = await spotsTable.getAll();
-      setSpots(allSpots);
-    } catch (error) {
-      console.error("Error loading spots:", error);
-      setError(error as Error);
     }
   };
 

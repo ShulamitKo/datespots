@@ -17,7 +17,7 @@ interface FilterBarProps {
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({ filters, setFilters }) => {
-  const updateFilters = (key: keyof Filters, value: any) => {
+  const updateFilters = <K extends keyof Filters>(key: K, value: Filters[K]) => {
     setFilters({ ...filters, [key]: value });
   };
 

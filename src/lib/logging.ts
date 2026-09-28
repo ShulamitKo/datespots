@@ -24,7 +24,7 @@ const getUserIP = async (): Promise<string> => {
 
 export const logEvent = async (
   type: LogType,
-  data: any,
+  data: Record<string, unknown>,
   severity: LogSeverity = 'info'
 ) => {
   try {
@@ -54,7 +54,7 @@ export const logEvent = async (
 
 const notifyAdmin = async (event: {
   type: LogType;
-  data: any;
+  data: Record<string, unknown>;
   severity: LogSeverity;
 }) => {
   const formData = new FormData();
