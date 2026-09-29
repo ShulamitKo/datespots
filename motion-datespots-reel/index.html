@@ -18,7 +18,7 @@ svg{overflow:visible;display:block}
 // Project settings. render.py and audio.py read them from here, so this is the only place they live.
 window.CONFIG = {
   W: 1080, H: 1920,
-  DUR: 15.5,
+  DUR: 17.5,
   FPS: 60,
   bg: '#F2EAE5',
   palette: {
@@ -27,7 +27,7 @@ window.CONFIG = {
     LINE: '#E7DEDA', BLOCK: '#F6F1EE',
   },
   loop: false,
-  hold: 2.4,
+  hold: 2.5,
   bpm: 120, beat0: 0,
   music: null,
 };
@@ -35,6 +35,7 @@ window.CONFIG = {
 </head>
 <body>
 <div id="stage"><div id="scenes"></div></div>
+<script src="shots/boxes.js"></script>
 <script src="core.js"></script>
 <script src="scene.js"></script>
 </body>
