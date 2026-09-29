@@ -91,7 +91,7 @@ export function TermsDialog({ trigger, autoOpen = true }: TermsDialogProps) {
           <div>
             <h3 className="text-xl font-semibold mb-3 text-primary">הצהרה כללית</h3>
             <p className="text-muted-foreground">
-              האתר מיועד לבני 18 ומעלה. השימוש באתר מהווה הסכמה לתנאים אלה ול<Link to="/privacy" className="underline" onClick={() => setOpen(false)}>מדיניות הפרטיות</Link>. האתר נוצר בכוונה טובה ומתוך רצון לעזור, אך השימוש בו הוא באחריות המשתמשים בלבד.
+              השימוש באתר מהווה הסכמה לתנאים אלה ול<Link to="/privacy" className="underline" onClick={() => setOpen(false)}>מדיניות הפרטיות</Link>. האתר נוצר בכוונה טובה ומתוך רצון לעזור, אך השימוש בו הוא באחריות המשתמשים בלבד.
             </p>
           </div>
 
