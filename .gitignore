@@ -46,3 +46,6 @@ cleaned_backup*.sql
 
 .vercel
 .env*.local
+
+# Demo video intermediates (screenshots, frames)
+demo-video/out/
