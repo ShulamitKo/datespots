@@ -156,21 +156,24 @@ export default function AddSpot() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">הוספת מקום חדש</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            ביטול
-          </Button>
-          <Button type="submit" form="add-spot-form">
-            הוספת מקום
-          </Button>
+    <div className="bg-gray-50/60 min-h-[100dvh]">
+      {/* כותרת דביקה - כפתור השליחה נשאר זמין גם בגלילה של טופס ארוך בטלפון */}
+      <div className="sticky top-0 z-[1100] bg-white/90 backdrop-blur border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900">הוספת מקום חדש</h1>
+          <div className="flex gap-2 flex-shrink-0">
+            <Button variant="outline" className="rounded-full" onClick={() => navigate(-1)}>
+              ביטול
+            </Button>
+            <Button type="submit" form="add-spot-form" className="rounded-full">
+              הוספת מקום
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="p-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start isolate">
+        <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm">
           <form id="add-spot-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">שם המקום</Label>
@@ -348,7 +351,7 @@ export default function AddSpot() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2.5">
                 <Checkbox
                   id="suitable_for_first_date"
                   checked={newSpot.suitable_for_first_date}
@@ -357,7 +360,7 @@ export default function AddSpot() {
                 <Label htmlFor="suitable_for_first_date">מתאים לדייט ראשון</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2.5">
                 <Checkbox
                   id="parking_available"
                   checked={newSpot.parking_available}
@@ -366,7 +369,7 @@ export default function AddSpot() {
                 <Label htmlFor="parking_available">חניה זמינה</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2.5">
                 <Checkbox
                   id="public_transport"
                   checked={newSpot.public_transport}
@@ -375,7 +378,7 @@ export default function AddSpot() {
                 <Label htmlFor="public_transport">תחבורה ציבורית</Label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2.5">
                 <Checkbox
                   id="reservation_required"
                   checked={newSpot.reservation_required}
@@ -398,13 +401,13 @@ export default function AddSpot() {
           </form>
         </Card>
 
-        <Card className="p-4">
+        <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm lg:sticky lg:top-24">
           <div className="space-y-2 mb-4">
             <Label>מיקום על המפה</Label>
             <p className="text-sm text-muted-foreground">* יש לבחור מיקום על המפה</p>
             <p className="text-sm text-muted-foreground">לחץ על המפה כדי לבחור מיקום, או השתמש בחיפוש </p>
           </div>
-          <div className="h-[600px] rounded-lg overflow-hidden">
+          <div className="h-[360px] sm:h-[480px] lg:h-[560px] rounded-xl overflow-hidden border border-gray-100">
             <Map 
               spots={[newSpot as Spot]} 
               onMapClick={handleMapClick} 

@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // Heebo תומך בעברית ובלטינית; Inter שהיה כאן לא כולל אותיות עבריות
+        sans: ['Heebo', 'system-ui', '-apple-system', 'Segoe UI', 'Arial', 'sans-serif'],
+      },
       colors: {
         background: "#ffffff",
         foreground: "#1f2937",
