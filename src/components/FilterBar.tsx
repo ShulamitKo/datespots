@@ -17,7 +17,7 @@ interface FilterBarProps {
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({ filters, setFilters }) => {
-  const updateFilters = (key: keyof Filters, value: any) => {
+  const updateFilters = <K extends keyof Filters>(key: K, value: Filters[K]) => {
     setFilters({ ...filters, [key]: value });
   };
 
@@ -64,12 +64,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, setFilters }) => 
           <Button
             variant="outline"
             size="sm"
-            className={`gap-2 ${hasActiveFilters ? 'bg-primary text-primary-foreground hover:bg-primary/90' : ''}`}
+            className={`gap-2 h-10 sm:h-11 w-10 sm:w-auto p-0 sm:px-4 rounded-full flex-shrink-0 relative ${hasActiveFilters ? 'bg-primary text-primary-foreground hover:bg-primary/90 border-primary' : 'border-gray-200'}`}
+            aria-label="סינון מורחב"
+            title="סינון מורחב"
           >
             <Filter className="h-4 w-4" />
-            סינון מורחב
+            <span className="hidden sm:inline">סינון מורחב</span>
             {hasActiveFilters && (
-              <Badge variant="outline" className="ml-2 bg-white/20 text-white">
+              <Badge variant="outline" className="absolute -top-1 -left-1 sm:static h-5 min-w-[20px] justify-center rounded-full px-1 text-[10px] sm:text-xs bg-white text-primary border-primary sm:bg-white/20 sm:text-white sm:border-white/40">
                 {filters.categories.length +
                  filters.regions.length +
                  filters.kosherTypes.length +
@@ -81,7 +83,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, setFilters }) => 
           </Button>
         </SheetTrigger>
         
-        <SheetContent side="right" className="w-[75%] sm:w-[400px] overflow-y-auto z-[1000]">
+        <SheetContent side="right" className="w-[88%] max-w-sm sm:w-[400px] sm:max-w-[400px] overflow-y-auto z-[1000]">
           <SheetHeader>
             <SheetTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2">

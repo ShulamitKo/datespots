@@ -219,16 +219,40 @@ export default function SpotDetails() {
     }
   };
 
-  if (isLoading) return <div className="container mx-auto py-8 text-center">טוען...</div>;
-  if (error) return <div className="container mx-auto py-8 text-center text-red-500">שגיאה בטעינת הפרטים</div>;
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4" aria-busy="true">
+        <div className="h-8 w-2/3 sm:w-1/3 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="h-9 w-40 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" />
+          <div className="h-80 rounded-2xl bg-gray-100 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="min-h-[60dvh] flex items-center justify-center p-6">
+        <div className="max-w-sm w-full text-center bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <p className="text-lg font-semibold text-gray-900">שגיאה בטעינת הפרטים</p>
+          <p className="text-sm text-gray-500 mt-1">ייתכן שהמקום הוסר, או שיש בעיית תקשורת רגעית.</p>
+          <Button className="mt-4 rounded-full" onClick={() => navigate('/')}>
+            <ArrowRight className="h-4 w-4 ml-2" />
+            חזרה לכל המקומות
+          </Button>
+        </div>
+      </div>
+    );
+  }
   if (!spot) return null;
 
   return (
-    <div className="spot-details-container">
-      <div className="container mx-auto p-4">
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold">{spot.name}</h1>
+    <div className="spot-details-container bg-gray-50/60">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex justify-between items-start gap-3 mb-4 sm:mb-6">
+          <div className="flex flex-col gap-2 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight break-words">{spot.name}</h1>
             {spot.status === 'under_review' && (
               <Badge 
                 variant="outline" 
@@ -241,7 +265,7 @@ export default function SpotDetails() {
           <ReportButton 
             spotId={spot.id} 
             spotName={spot.name}
-            className="mt-1"
+            className="mt-1 flex-shrink-0"
             onReportSubmitted={loadSpot}
           />
         </div>
@@ -272,8 +296,8 @@ export default function SpotDetails() {
         </div>
 
         <div className="spot-details-content">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card className="p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start">
+            <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm">
               <div className="space-y-4">
                 {isEditing ? (
                   <>
@@ -451,7 +475,7 @@ export default function SpotDetails() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2.5">
                         <Checkbox
                           id="suitable_for_first_date"
                           checked={editedSpot?.suitable_for_first_date}
@@ -460,7 +484,7 @@ export default function SpotDetails() {
                         <Label htmlFor="suitable_for_first_date">מתאים לדייט ראשון</Label>
                       </div>
 
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2.5">
                         <Checkbox
                           id="parking_available"
                           checked={editedSpot?.parking_available}
@@ -469,7 +493,7 @@ export default function SpotDetails() {
                         <Label htmlFor="parking_available">חניה זמינה</Label>
                       </div>
 
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2.5">
                         <Checkbox
                           id="public_transport"
                           checked={editedSpot?.public_transport}
@@ -478,7 +502,7 @@ export default function SpotDetails() {
                         <Label htmlFor="public_transport">תחבורה ציבורית</Label>
                       </div>
 
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2.5">
                         <Checkbox
                           id="reservation_required"
                           checked={editedSpot?.reservation_required}
@@ -589,15 +613,15 @@ export default function SpotDetails() {
                       </Badge>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
+                    <div className="space-y-2.5 text-gray-700">
+                      <p className="flex items-start gap-2.5">
+                        <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                         <span className="text-gray-600">{spot.address}</span>
                       </p>
                       
                       {spot.phone && (
-                        <p className="flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
+                        <p className="flex items-center gap-2.5">
+                          <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
                           <a href={`tel:${spot.phone}`} className="text-blue-600 hover:underline">
                             {spot.phone}
                           </a>
@@ -605,31 +629,31 @@ export default function SpotDetails() {
                       )}
                       
                       {spot.website && (
-                        <p className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          <a href={spot.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        <p className="flex items-center gap-2.5 min-w-0">
+                          <Globe className="h-4 w-4 flex-shrink-0 text-primary" />
+                          <a href={spot.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate" dir="ltr">
                             {spot.website}
                           </a>
                         </p>
                       )}
                       
                       {spot.opening_hours && (
-                        <p className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
+                        <p className="flex items-start gap-2.5">
+                          <Clock className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                           {spot.opening_hours}
                         </p>
                       )}
                       
                       {spot.recommended_time && (
-                        <p className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
+                        <p className="flex items-start gap-2.5">
+                          <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                           זמן מומלץ: {spot.recommended_time}
                         </p>
                       )}
                     </div>
 
                     {spot.latitude && spot.longitude && (
-                      <div className="h-64 sm:h-80 mt-4 rounded-lg overflow-hidden">
+                      <div className="h-56 sm:h-80 mt-4 rounded-xl overflow-hidden border border-gray-100 isolate">
                         <MapContainer
                           center={[spot.latitude, spot.longitude]}
                           zoom={15}
@@ -648,16 +672,16 @@ export default function SpotDetails() {
                       </div>
                     )}
 
-                    <div className="flex flex-wrap gap-2 text-sm text-gray-500">
-                      {spot.parking_available && <span>✓ חניה זמינה</span>}
-                      {spot.public_transport && <span>✓ תחבורה ציבורית</span>}
-                      {spot.reservation_required && <span>✓ נדרשת הזמנה מראש</span>}
+                    <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                      {spot.parking_available && <span className="rounded-full bg-gray-100 px-3 py-1">✓ חניה זמינה</span>}
+                      {spot.public_transport && <span className="rounded-full bg-gray-100 px-3 py-1">✓ תחבורה ציבורית</span>}
+                      {spot.reservation_required && <span className="rounded-full bg-gray-100 px-3 py-1">✓ נדרשת הזמנה מראש</span>}
                     </div>
 
                     {spot.notes && (
-                      <div className="mt-4">
-                        <h3 className="font-semibold mb-2">הערות נוספות</h3>
-                        <p className="text-gray-600">{spot.notes}</p>
+                      <div className="mt-4 rounded-xl bg-primary/5 p-4">
+                        <h3 className="font-semibold mb-1.5 text-gray-900">הערות נוספות</h3>
+                        <p className="text-gray-600 leading-relaxed">{spot.notes}</p>
                       </div>
                     )}
                   </>
@@ -667,14 +691,16 @@ export default function SpotDetails() {
 
             <div className="space-y-4">
               <div>
-                <h2 className="text-2xl font-semibold mb-4">ביקורות</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900">ביקורות</h2>
                 {reviews.length === 0 ? (
-                  <p className="text-gray-500">עדיין אין ביקורות למקום זה</p>
+                  <p className="text-gray-500 rounded-2xl border border-dashed border-gray-200 bg-white p-4 text-center">
+                    עדיין אין ביקורות למקום זה - היו הראשונים לכתוב!
+                  </p>
                 ) : (
                   <div className="space-y-4">
                     {reviews.map((review) => (
-                      <Card key={review.id} className="p-4">
-                        <div className="flex justify-between items-start">
+                      <Card key={review.id} className="p-4 rounded-2xl border-gray-100 shadow-sm">
+                        <div className="flex justify-between items-start gap-3">
                           <div>
                             <p className="font-semibold">{review.reviewer_name}</p>
                             <p className="text-gray-500 text-sm">
@@ -682,19 +708,19 @@ export default function SpotDetails() {
                               {review.visit_date && ` • ביקר/ה ב-${new Date(review.visit_date).toLocaleDateString('he-IL')}`}
                             </p>
                           </div>
-                          <Badge variant="outline" className="text-lg text-yellow-500 bg-yellow-50">
+                          <Badge variant="outline" className="text-sm sm:text-base text-yellow-500 bg-yellow-50 flex-shrink-0">
                             {Array.from({ length: review.rating }).map(() => "⭐").join("")}
                           </Badge>
                         </div>
-                        <p className="mt-2">{review.content}</p>
+                        <p className="mt-2 text-gray-700 leading-relaxed break-words">{review.content}</p>
                       </Card>
                     ))}
                   </div>
                 )}
               </div>
 
-              <Card className="p-4">
-                <h2 className="text-xl font-semibold mb-4">הוספת ביקורת</h2>
+              <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900">הוספת ביקורת</h2>
                 <form onSubmit={handleSubmitReview} className="space-y-4">
                   <div>
                     <Label htmlFor="reviewer_name">שם</Label>
@@ -739,7 +765,7 @@ export default function SpotDetails() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full h-11 rounded-full">
                     שליחת ביקורת
                   </Button>
                 </form>
