@@ -10,22 +10,26 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 
 interface TermsDialogProps {
   trigger?: React.ReactNode;
+  // האם לפתוח את החלון אוטומטית בביקור הראשון. מופע נוסף (למשל בפוטר) מעביר false
+  autoOpen?: boolean;
 }
 
-export function TermsDialog({ trigger }: TermsDialogProps) {
+export function TermsDialog({ trigger, autoOpen = true }: TermsDialogProps) {
   const [open, setOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
+    if (!autoOpen) return;
     const hasSeenTerms = localStorage.getItem('hasSeenTerms');
     if (!hasSeenTerms) {
       setOpen(true);
     }
-  }, []);
+  }, [autoOpen]);
 
   const handleClose = () => {
     if (agreed) {
@@ -59,7 +63,8 @@ export function TermsDialog({ trigger }: TermsDialogProps) {
               <p>DateSpots הוא פלטפורמה קהילתית לשיתוף המלצות על מקומות לדייטים</p>
               <p>השימוש באתר הוא חופשי וללא עלות</p>
               <p>המידע באתר מבוסס על המלצות משתמשים</p>
-              <p>אין צורך בהרשמה או במסירת פרטים אישיים</p>
+              <p>אין צורך בהרשמה. מידע שנאסף (כמו כתובת IP) מתואר ב<Link to="/privacy" className="underline" onClick={() => setOpen(false)}>מדיניות הפרטיות</Link></p>
+              <p>ביקורות מתפרסמות לכל הגולשים יחד עם השם שבחרתם. אפשר להשתמש בכינוי</p>
             </div>
           </div>
 
@@ -77,7 +82,7 @@ export function TermsDialog({ trigger }: TermsDialogProps) {
             <h3 className="text-xl font-semibold mb-3 text-primary">כללי התנהגות בסיסיים</h3>
             <div className="space-y-2 text-muted-foreground">
               <p>יש לשתף מידע אמיתי ומדויק ככל האפשר</p>
-              <p>יש לכבד את הפרטיות של אחרים</p>
+              <p>יש לכבד את הפרטיות של אחרים ולא לפרסם פרטים מזהים של אנשים (שמות מלאים, טלפונים, תמונות) בלי הסכמתם</p>
               <p>אין לפרסם תוכן פוגעני או לא חוקי</p>
               <p>אנו שומרים את הזכות להסיר תוכן לא הולם</p>
             </div>
@@ -86,7 +91,7 @@ export function TermsDialog({ trigger }: TermsDialogProps) {
           <div>
             <h3 className="text-xl font-semibold mb-3 text-primary">הצהרה כללית</h3>
             <p className="text-muted-foreground">
-              השימוש באתר מהווה הסכמה לתנאים אלה. האתר נוצר בכוונה טובה ומתוך רצון לעזור, אך השימוש בו הוא באחריות המשתמשים בלבד.
+              השימוש באתר מהווה הסכמה לתנאים אלה ול<Link to="/privacy" className="underline" onClick={() => setOpen(false)}>מדיניות הפרטיות</Link>. האתר נוצר בכוונה טובה ומתוך רצון לעזור, אך השימוש בו הוא באחריות המשתמשים בלבד.
             </p>
           </div>
 

@@ -15,6 +15,20 @@ import { FilterBar } from "@/components/FilterBar";
 import { AboutDialog } from "@/components/AboutDialog";
 import { TermsDialog } from "@/components/TermsDialog";
 import { type Filters } from '@/lib/types';
+import { useToast } from "@/components/ui/use-toast";
+import { usePageTitle } from "@/hooks/usePageTitle";
+
+// תגיות הסינון הפעיל הן div עם onClick - כך הן נגישות גם במקלדת ובקורא מסך
+const clickableBadgeProps = {
+  role: 'button',
+  tabIndex: 0,
+  onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.currentTarget.click();
+    }
+  },
+} as const;
 
 // Custom icons for different categories
 const categoryIcons = {
@@ -93,6 +107,8 @@ function MapBoundsHandler({ spots, resetMap }: { spots: Spot[], resetMap: boolea
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  usePageTitle(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRefs = useRef<{ [key: string]: L.Marker | null }>({});
   const [spots, setSpots] = useState<Spot[]>([]);
@@ -145,19 +161,30 @@ export default function HomePage() {
     loadSpots();
   }, []);
 
-  useEffect(() => {
-    // Get user's location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation([position.coords.latitude, position.coords.longitude]);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
-      );
+  // המיקום מתבקש רק אחרי לחיצה של המשתמש (פרטיות כברירת מחדל).
+  // הוא נשמר בזיכרון הדף בלבד ומשמש לחישוב מרחקים במכשיר - לא נשלח לשרת.
+  const [isLocating, setIsLocating] = useState(false);
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "הדפדפן לא תומך באיתור מיקום", variant: "destructive" });
+      return;
     }
-  }, []);
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation([position.coords.latitude, position.coords.longitude]);
+        setIsLocating(false);
+      },
+      () => {
+        setIsLocating(false);
+        toast({
+          title: "לא התקבלה גישה למיקום",
+          description: "אפשר לאשר גישה למיקום בהגדרות הדפדפן ולנסות שוב",
+          variant: "destructive",
+        });
+      }
+    );
+  };
 
   // הוספת מעקב אחר שינויי גודל מסך
   useEffect(() => {
@@ -340,6 +367,20 @@ export default function HomePage() {
   const headerButtonClass = `bg-white/10 hover:bg-white/20 text-white hover:text-white transition-all rounded-full border-white/30
     w-9 h-9 sm:w-auto sm:h-9 sm:px-4 hover:scale-105 active:scale-95 duration-200`;
 
+  const nearMeButton = !userLocation && (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={requestLocation}
+      disabled={isLocating}
+      className="h-10 rounded-full text-xs sm:text-sm flex items-center justify-center gap-1.5 bg-gray-100/80 border-0 text-gray-700 flex-shrink-0"
+      title="הצגת המרחק למקומות לפי המיקום שלך. המיקום לא נשמר ולא נשלח לשרת"
+    >
+      <MapPin className="w-4 h-4" aria-hidden="true" />
+      <span>{isLocating ? 'מאתר...' : 'מקומות קרובים אליי'}</span>
+    </Button>
+  );
+
   const distanceControls = userLocation && (
     <div className="flex items-center gap-2 w-full sm:w-auto">
       <Select
@@ -349,7 +390,7 @@ export default function HomePage() {
           radius: value === "all" ? null : Number(value)
         })}
       >
-        <SelectTrigger className="h-10 text-xs sm:text-sm flex-1 sm:flex-none sm:w-[170px] bg-gray-100/80 border-0 rounded-full">
+        <SelectTrigger aria-label="הגבלת רדיוס חיפוש" className="h-10 text-xs sm:text-sm flex-1 sm:flex-none sm:w-[170px] bg-gray-100/80 border-0 rounded-full">
           <MapPin className="w-4 h-4 ml-1.5 text-gray-400" />
           <SelectValue placeholder="הגבל רדיוס" />
         </SelectTrigger>
@@ -366,6 +407,7 @@ export default function HomePage() {
       <Button
         variant={filters.sortByDistance ? "default" : "outline"}
         onClick={() => setFilters({ ...filters, sortByDistance: !filters.sortByDistance })}
+        aria-pressed={filters.sortByDistance}
         size="sm"
         className={`h-10 rounded-full text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all duration-200
           ${filters.sortByDistance ? 'bg-primary text-white' : 'bg-gray-100/80 border-0 text-gray-600'}`}
@@ -480,7 +522,7 @@ export default function HomePage() {
                 placeholder="חיפוש מקומות..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 placeholder:text-gray-400 text-sm h-full shadow-none"
+                className="w-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 placeholder:text-gray-500 text-sm h-full shadow-none"
                 aria-label="חיפוש מקומות"
               />
             </div>
@@ -488,6 +530,7 @@ export default function HomePage() {
             <FilterBar filters={filters} setFilters={setFilters} />
 
             {userLocation && <div className="hidden sm:flex">{distanceControls}</div>}
+            {nearMeButton && <div className="hidden sm:flex">{nearMeButton}</div>}
 
             <div className="sm:hidden flex flex-shrink-0 bg-gray-100/80 p-1 rounded-full" role="tablist" aria-label="מצב תצוגה">
               <Button
@@ -498,6 +541,7 @@ export default function HomePage() {
                 className={`flex items-center justify-center gap-1 rounded-full h-8 px-2.5 text-xs transition-all duration-200
                   ${viewMode === 'list' ? 'bg-white text-primary shadow-sm hover:bg-white' : 'text-gray-500 hover:text-primary hover:bg-transparent'}`}
                 title="תצוגת רשימה"
+                aria-label="תצוגת רשימה"
               >
                 <List className="h-3.5 w-3.5" />
                 <span className="hidden min-[380px]:inline">רשימה</span>
@@ -510,6 +554,7 @@ export default function HomePage() {
                 className={`flex items-center justify-center gap-1 rounded-full h-8 px-2.5 text-xs transition-all duration-200
                   ${viewMode === 'map' ? 'bg-white text-primary shadow-sm hover:bg-white' : 'text-gray-500 hover:text-primary hover:bg-transparent'}`}
                 title="תצוגת מפה"
+                aria-label="תצוגת מפה"
               >
                 <Map className="h-3.5 w-3.5" />
                 <span className="hidden min-[380px]:inline">מפה</span>
@@ -519,6 +564,7 @@ export default function HomePage() {
 
           {/* בטלפון בקרי המרחק יורדים לשורה משלהם */}
           {userLocation && <div className="flex sm:hidden">{distanceControls}</div>}
+          {nearMeButton && <div className="flex sm:hidden">{nearMeButton}</div>}
 
           {/* Active Filters */}
           {hasActiveFilters && (
@@ -526,6 +572,7 @@ export default function HomePage() {
               <div className="flex flex-nowrap items-center gap-2 min-w-max sm:flex-wrap sm:min-w-0">
                 {filters.categories.map(category => (
                   <Badge
+                    {...clickableBadgeProps}
                     key={category}
                     variant="outline"
                     className="gap-1 h-7 cursor-pointer bg-white hover:bg-secondary whitespace-nowrap"
@@ -537,11 +584,13 @@ export default function HomePage() {
                     }}
                   >
                     {category}
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
+                    <span className="sr-only">(הסרת הסינון)</span>
                   </Badge>
                 ))}
                 {filters.regions.map(region => (
                   <Badge
+                    {...clickableBadgeProps}
                     key={region}
                     variant="outline"
                     className="gap-1 h-7 cursor-pointer bg-white hover:bg-secondary whitespace-nowrap"
@@ -553,11 +602,13 @@ export default function HomePage() {
                     }}
                   >
                     {region}
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
+                    <span className="sr-only">(הסרת הסינון)</span>
                   </Badge>
                 ))}
                 {filters.kosherTypes.map(type => (
                   <Badge
+                    {...clickableBadgeProps}
                     key={type}
                     variant="outline"
                     className={`
@@ -574,11 +625,13 @@ export default function HomePage() {
                     }}
                   >
                     {type === '?' ? 'רמת כשרות: ?' : type}
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
+                    <span className="sr-only">(הסרת הסינון)</span>
                   </Badge>
                 ))}
                 {filters.priceRanges.map(price => (
                   <Badge
+                    {...clickableBadgeProps}
                     key={price}
                     variant="outline"
                     className="gap-1 h-7 cursor-pointer bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200 whitespace-nowrap"
@@ -591,11 +644,13 @@ export default function HomePage() {
                   >
                     {price === 'זול' ? '₪ זול' :
                      price === 'בינוני' ? '₪₪ בינוני' : '₪₪₪ יקר'}
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
+                    <span className="sr-only">(הסרת הסינון)</span>
                   </Badge>
                 ))}
                 {filters.suitableForFirstDate && (
                   <Badge
+                    {...clickableBadgeProps}
                     variant="outline"
                     className="gap-1 h-7 cursor-pointer bg-white hover:bg-secondary whitespace-nowrap"
                     onClick={() => {
@@ -606,7 +661,8 @@ export default function HomePage() {
                     }}
                   >
                     מתאים לדייט ראשון
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
+                    <span className="sr-only">(הסרת הסינון)</span>
                   </Badge>
                 )}
 
@@ -634,7 +690,7 @@ export default function HomePage() {
                   <X className="h-3 w-3 text-red-500" />
                 </Button>
 
-                <span className="text-xs text-gray-400 whitespace-nowrap">
+                <span className="text-xs text-gray-600 whitespace-nowrap" aria-live="polite">
                   {filteredSpots.length} מקומות
                 </span>
               </div>
@@ -644,7 +700,7 @@ export default function HomePage() {
       </div>
 
       {/* Main Content */}
-      <main className="relative isolate flex-1 min-h-0 flex">
+      <main id="main-content" tabIndex={-1} className="relative isolate flex-1 min-h-0 flex outline-none">
         {/* List View */}
         <aside
           className={`

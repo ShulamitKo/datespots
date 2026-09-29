@@ -9,6 +9,8 @@ import { Flag, Loader2 } from 'lucide-react';
 import { reportsTable, spotsTable } from '@/lib/supabase/config';
 import { EMAIL_STYLES } from './email-styles';
 import { isRateLimitError } from '@/lib/rateLimit';
+import { Link } from 'react-router-dom';
+import { LEGAL } from '@/lib/legal';
 
 const REPORT_TYPES = [
   { value: 'spam', label: 'תוכן זבל/ספאם' },
@@ -138,6 +140,9 @@ export function ReportButton({ spotId, spotName, className, onReportSubmitted }:
     <>
       <iframe
         name="submitFrame"
+        title="שליחת טופס"
+        aria-hidden="true"
+        tabIndex={-1}
         style={{ display: 'none' }}
       />
       <Button 
@@ -146,7 +151,7 @@ export function ReportButton({ spotId, spotName, className, onReportSubmitted }:
         onClick={() => setIsOpen(true)}
         className={`text-red-600 hover:text-red-700 hover:bg-red-50 ${className}`}
       >
-        <Flag className="h-4 w-4 ml-2" />
+        <Flag className="h-4 w-4 ml-2" aria-hidden="true" />
         דווח על בעיה
       </Button>
 
@@ -161,16 +166,17 @@ export function ReportButton({ spotId, spotName, className, onReportSubmitted }:
 
           <div className="grid gap-4 py-4">
             <div className="space-y-3">
-              <Label>סוג הדיווח</Label>
+              <Label id="report-type-label">סוג הדיווח</Label>
               <RadioGroup
+                aria-labelledby="report-type-label"
                 value={reportType}
                 onValueChange={(value) => setReportType(value as ReportType)}
                 className="flex flex-col gap-3"
               >
                 {REPORT_TYPES.map(({ value, label }) => (
                   <div key={value} className="flex items-center space-x-2 space-x-reverse">
-                    <RadioGroupItem value={value} id={value} />
-                    <Label htmlFor={value} className="font-normal cursor-pointer">
+                    <RadioGroupItem value={value} id={`report-${value}`} />
+                    <Label htmlFor={`report-${value}`} className="font-normal cursor-pointer">
                       {label}
                     </Label>
                   </div>
@@ -179,14 +185,20 @@ export function ReportButton({ spotId, spotName, className, onReportSubmitted }:
             </div>
 
             <div className="space-y-2">
-              <Label>תיאור הבעיה</Label>
+              <Label htmlFor="report-description">תיאור הבעיה</Label>
               <Textarea
+                id="report-description"
                 placeholder="תאר את הבעיה..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="min-h-[100px] resize-none"
               />
             </div>
+
+            <p className="text-xs text-gray-600">
+              לצורך מניעת שימוש לרעה, כתובת ה-IP שלך נשמרת עם הדיווח עד {LEGAL.retentionDays} ימים וגלויה למנהלת האתר בלבד.
+              {' '}<Link to="/privacy" className="underline" onClick={() => setIsOpen(false)}>מדיניות הפרטיות</Link>
+            </p>
 
             <Button 
               onClick={handleSubmit}

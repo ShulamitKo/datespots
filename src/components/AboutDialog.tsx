@@ -59,7 +59,7 @@ export function AboutDialog({ trigger }: AboutDialogProps) {
 
           <div>
             <h3 className="text-xl font-semibold mb-3 text-primary">איך זה עובד? 💡</h3>
-            <p className="mb-3 text-muted-foreground">פשוט מאוד! אין צורך בהרשמה או בפרטים מזהים. אתם יכולים:</p>
+            <p className="mb-3 text-muted-foreground">פשוט מאוד! אין צורך בהרשמה. אתם יכולים:</p>
             <div className="space-y-2 text-muted-foreground">
               <p>לחפש מקומות לפי קטגוריות: בתי קפה, מסעדות, ברים ופעילויות</p>
               <p>לסנן לפי אזור, כשרות, טווח מחירים ועוד</p>

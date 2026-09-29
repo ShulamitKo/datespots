@@ -27,6 +27,14 @@ export function SpotCard({ spot, onClick, isSelected, distance, compact }: SpotC
     <div
       id={`spot-${spot.id}`}
       tabIndex={0}
+      role={onClick ? 'button' : undefined}
+      aria-pressed={onClick ? !!isSelected : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
       className={cn(
         'group relative flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm transition-all duration-200',
         onClick && 'cursor-pointer hover:shadow-md hover:border-primary/30 sm:hover:-translate-y-0.5',
@@ -71,7 +79,8 @@ export function SpotCard({ spot, onClick, isSelected, distance, compact }: SpotC
             'flex flex-shrink-0 items-center gap-0.5 rounded-full bg-gray-50 px-2 py-0.5 text-gray-500 whitespace-nowrap',
             compact ? 'text-[11px] sm:text-xs' : 'text-xs'
           )}>
-            <MapPin className="h-3 w-3" />
+            <MapPin className="h-3 w-3" aria-hidden="true" />
+            <span className="sr-only">מרחק: </span>
             {distance}
           </span>
         )}
@@ -92,8 +101,12 @@ export function SpotCard({ spot, onClick, isSelected, distance, compact }: SpotC
           </span>
         )}
         <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
-          {spot.price_range === 'חינם' ? '🆓 חינם' :
-           '₪'.repeat(spot.price_range === 'זול' ? 1 : spot.price_range === 'בינוני' ? 2 : 3)}
+          {spot.price_range === 'חינם' ? <><span aria-hidden="true">🆓 </span>חינם</> : (
+            <>
+              <span aria-hidden="true">{'₪'.repeat(spot.price_range === 'זול' ? 1 : spot.price_range === 'בינוני' ? 2 : 3)}</span>
+              <span className="sr-only">מחיר: {spot.price_range}</span>
+            </>
+          )}
         </span>
       </div>
     </div>

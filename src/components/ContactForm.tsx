@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Loader2, Mail } from "lucide-react"
 import { EMAIL_STYLES } from "./email-styles"
 import { validateForm } from "./form-validation"
+import { Link } from "react-router-dom"
 
 export function ContactForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -87,6 +88,9 @@ export function ContactForm() {
     <>
       <iframe
         name="submitFrame"
+        title="שליחת טופס"
+        aria-hidden="true"
+        tabIndex={-1}
         style={{ display: 'none' }}
         ref={iframeRef}
       />
@@ -96,7 +100,7 @@ export function ContactForm() {
             variant="default"
             className="bg-primary hover:bg-primary/90 text-white shadow-md transition-all duration-200 hover:scale-105 flex items-center gap-2 px-4"
           >
-            <Mail className="h-4 w-4" />
+            <Mail className="h-4 w-4" aria-hidden="true" />
             <span>צור קשר</span>
           </Button>
         </DialogTrigger>
@@ -133,7 +137,6 @@ export function ContactForm() {
                     subjectInput.value = `פנייה חדשה מDateSpots האתר שלך: ${e.target.value}`;
                   }
                 }}
-                aria-label="נושא ההודעה"
                 minLength={2}
               />
             </div>
@@ -144,9 +147,9 @@ export function ContactForm() {
                 id="name" 
                 name="name" 
                 required 
+                autoComplete="name"
                 disabled={isSubmitting}
                 className="border-gray-200 focus:border-primary focus:ring-primary"
-                aria-label="שם השולח"
                 minLength={2}
               />
             </div>
@@ -158,10 +161,10 @@ export function ContactForm() {
                 id="email" 
                 name="email" 
                 required 
+                autoComplete="email"
                 dir="ltr" 
                 disabled={isSubmitting}
                 className="border-gray-200 focus:border-primary focus:ring-primary"
-                aria-label="כתובת אימייל לתגובה"
                 pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
               />
             </div>
@@ -174,16 +177,19 @@ export function ContactForm() {
                 required 
                 disabled={isSubmitting}
                 className="min-h-[120px] border-gray-200 focus:border-primary focus:ring-primary"
-                aria-label="תוכן ההודעה"
                 minLength={10}
               />
             </div>
+
+            <p className="text-xs text-gray-600">
+              השם והמייל ישמשו רק למענה לפנייה. הפנייה מועברת אלינו דרך שירות FormSubmit ונשמרת כל עוד נדרש לטיפול בה.
+              {' '}<Link to="/privacy" className="underline" onClick={() => setIsOpen(false)}>מדיניות הפרטיות</Link>
+            </p>
 
             <Button 
               type="submit" 
               className="w-full bg-primary hover:bg-primary/90 text-white shadow-md transition-all duration-200"
               disabled={isSubmitting}
-              aria-label="שלח טופס"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
