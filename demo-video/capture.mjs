@@ -3,8 +3,9 @@
 // מתוך out/spots.json, כך שלא צריך מפתחות ולא נוגעים בנתונים האמיתיים.
 import { chromium } from 'playwright';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const DIR = new URL('.', import.meta.url).pathname;
+const DIR = fileURLToPath(new URL('.', import.meta.url));
 const OUT = DIR + 'out/';
 const APP = process.env.APP_URL || 'http://127.0.0.1:5173';
 const SPOT_ID = 'e7069a0b-b49a-4c6c-a0a8-b67e171ec26c';   // "מרפסת ים המלח - קפה בקצה"
@@ -57,6 +58,25 @@ await box('firstdate', firstDate);
 await firstDate.click(); await shot('s03_filter_both');
 await p.keyboard.press('Escape'); await shot('s04_results');
 
+// 4. מפה: מעבר לתצוגת מפה, גלילת הכרטיסים עד המקום, לחיצה עליו (המפה טסה אליו ונפתחת בועה)
+const mapTab = p.getByRole('tab', { name: /מפה/ });
+await box('maptab', mapTab);
+await mapTab.click(); await p.waitForTimeout(300);
+// המפה נוצרה כשהייתה מוסתרת (תצוגת רשימה), אז Leaflet לא יודע את הגודל שלה: אירוע resize מסדר את זה,
+// ו"רענן מפה" מתאים את התצוגה לתוצאות הסינון
+await p.setViewportSize({ width: W, height: H - 1 }); await p.setViewportSize({ width: W, height: H });
+await p.getByTitle('רענן מפה בהתאם לחיפוש').click();
+await p.waitForTimeout(1500); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1500);
+await shot('s04_map');
+const mapCard = p.locator(`#spot-${SPOT_ID}`);
+await mapCard.scrollIntoViewIfNeeded(); await p.waitForTimeout(800);
+await shot('s04_map_card');
+await box('mapcard', mapCard);
+await mapCard.click(); await p.waitForTimeout(2000); await p.waitForLoadState('networkidle'); await p.waitForTimeout(1500);
+await shot('s04_map_popup');
+await box('more', p.locator('.leaflet-popup-content button, .leaflet-popup-content a').first());
+await p.getByRole('tab', { name: /רשימה/ }).click(); await p.waitForTimeout(500);
+
 // 4. דף מקום. אריחי המפה לא תמיד זמינים בסביבת הרינדור, לכן מסתירים את קופסת המפה
 //    בצילום הגלילה (שאר הדף נשאר בדיוק כמו באפליקציה)
 const card = p.locator('[id^="spot-"]').first();
@@ -75,7 +95,7 @@ await box('add', add);
 await add.click(); await p.waitForTimeout(1200);
 await shot('s06_add');
 await p.getByLabel('שם המקום').fill('תצפית שקיעה בחוף הים');
-await p.getByLabel('כתובת').fill('טיילת, תל אביב');
+await p.getByLabel('כתובת', { exact: true }).fill('טיילת, תל אביב');
 await shot('s06_add_filled');
 
 await p.evaluate(() => localStorage.removeItem('spotFilters'));

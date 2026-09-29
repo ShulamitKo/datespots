@@ -4,16 +4,17 @@
 //   node render.mjs gif                -> out/gframes (10fps, רקע סטטי - GIF קטן)
 import { chromium } from 'playwright';
 import fs from 'fs';
+import { fileURLToPath, pathToFileURL } from 'url';
 
-const DIR = new URL('.', import.meta.url).pathname;
+const DIR = fileURLToPath(new URL('.', import.meta.url));
 const OUT = DIR + 'out/';
-const DUR = 33.6;                      // 14 תיבות של 2.4 שנ' (100 BPM)
+const DUR = 38.4;                      // 16 תיבות של 2.4 שנ' (100 BPM)
 const mode = process.argv[2];
 
 const b = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
 p.on('pageerror', e => console.log('PAGEERROR', e.message));
-await p.goto('file://' + DIR + 'demo.html', { waitUntil: 'networkidle' });
+await p.goto(pathToFileURL(DIR + 'demo.html').href, { waitUntil: 'networkidle' });
 await p.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map(i => i.decode())); });
 if (!(await p.evaluate(() => document.fonts.check('900 50px Heebo')))) console.warn('warning: Heebo font did not load');
 await p.evaluate(pos => setPos(pos), JSON.parse(fs.readFileSync(OUT + 'pos.json')));

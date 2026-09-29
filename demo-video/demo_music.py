@@ -1,18 +1,20 @@
 """מוזיקה לסרטון ההדגמה: פופ קליל ואופטימי, 100 BPM, דו מז'ור (C-Am-F-G).
 מסונכרנת לציר הזמן של demo.html: תיבה = 2.4 שנ', התופים נכנסים ב-4.8,
-מצלתיים בתחילת שלב 5 (24.0), אקורד סיום ב-28.8, ו"טיק" עדין בכל לחיצה.
+מצלתיים בתחילת שלב 6 (28.8), אקורד סיום ב-33.6, ו"טיק" עדין בכל לחיצה.
 הכול מסונתז מאפס - בלי דגימות ובלי זכויות יוצרים."""
 import numpy as np, wave, sys
 
 SR = 44100
 BEAT = 0.6
 BAR = BEAT * 4
-LEN = 33.6
+LEN = 38.4
+END = 33.6                                        # אקורד הסיום
+BARS = 14                                         # תיבות לפני הסיום
 total = int(SR * (LEN + 3))
 rng = np.random.default_rng(11)
 L = np.zeros(total); R = np.zeros(total)          # כלים עם הדהוד
 DL = np.zeros(total); DR = np.zeros(total)        # תופים וטיקים (כמעט יבשים)
-TAPS = [7.8, 12.6, 14.4, 15.6, 19.2, 24.6]
+TAPS = [7.8, 12.6, 14.4, 15.6, 19.2, 21.6, 24.0, 29.4]
 
 def hz(m): return 440 * 2 ** ((m - 69) / 12)
 def at(bar, beat=0.0): return bar * BAR + beat * BEAT
@@ -58,8 +60,9 @@ MEL = {  # מוטיב של ארבע תיבות: (midi, פעמה, אורך)
     'G':  [(86,0,1.5),(83,1.5,.5),(79,2,2)],
 }
 
-for b in range(12):
-    name = PROG[b % 4]; ch = CH[name]; root = ROOT[name]
+for b in range(BARS):
+    # שתי התיבות האחרונות תמיד F-G, כדי שהסיום ייפתר לדו מז'ור
+    name = PROG[(b if b < BARS - 2 else b + 2) % 4]; ch = CH[name]; root = ROOT[name]
     if b < 2:
         # פתיחה: אקורדים מתמשכים רכים
         for i, m in enumerate(ch):
@@ -86,35 +89,35 @@ for b in range(12):
             if beat in (1, 3):
                 c = hp(noise(.2), 16) * np.exp(-np.arange(int(.2*SR))/SR * 24) * .12
                 add(c, at(b, beat), pan=.05, dry=True)
-            hat_d = .16 if b >= 10 else .05
-            h = hp(noise(hat_d), 4) * np.exp(-np.arange(int(hat_d*SR))/SR * (18 if b >= 10 else 70)) * .05
+            hat_d = .16 if b >= BARS - 2 else .05
+            h = hp(noise(hat_d), 4) * np.exp(-np.arange(int(hat_d*SR))/SR * (18 if b >= BARS - 2 else 70)) * .05
             add(h, at(b, beat + .5), pan=-.25, dry=True)
         for k in range(16):  # שייקר שקט
             sh = hp(noise(.04), 3) * np.exp(-np.arange(int(.04*SR))/SR * 90) * (.018 if k % 2 else .01)
             add(sh, at(b, k * .25), pan=.35, dry=True)
-    # מלודיה: תיבות 4-11, בפעם השנייה (10-11) עם הכפלת אוקטבה
-    if 4 <= b <= 11:
+    # מלודיה: מתיבה 4 עד הסוף, בשתי התיבות האחרונות עם הכפלת אוקטבה
+    if b >= 4:
         for m, beat, d in MEL[name]:
             add(bell(m, .5, d * BEAT), at(b, beat), pan=.12)
-            if b >= 10: add(bell(m + 12, .18, d * BEAT), at(b, beat) + .005, pan=.3)
+            if b >= BARS - 2: add(bell(m + 12, .18, d * BEAT), at(b, beat) + .005, pan=.3)
 
 def crash(start, vol=.12):
     d = 2.2; t = np.arange(int(d * SR)) / SR
     add(hp(noise(d), 3) * np.exp(-t * 2.2) * vol, start, pan=-.1, dry=True)
 
-crash(at(2)); crash(24.0, .1)
+crash(at(2)); crash(28.8, .1)
 # ריזר לפני הסיום
 d = BAR * .5; t = np.arange(int(d * SR)) / SR
-add(hp(noise(d), 6) * (t / d) ** 2 * .07, 28.8 - d, dry=True)
+add(hp(noise(d), 6) * (t / d) ** 2 * .07, END - d, dry=True)
 
 # סיום: אקורד דו מז'ור מלא + בס + מצלתיים, מצלצל עד הסוף
 for i, m in enumerate([36, 48, 55, 60, 64, 67, 72, 76]):
-    add(piano(m, .5, 4.2), 28.8 + i * .03, pan=-.35 + i * .1)
+    add(piano(m, .5, 4.2), END + i * .03, pan=-.35 + i * .1)
 t = np.arange(int(3.5 * SR)) / SR
-add(np.sin(2*np.pi*hz(24)*t) * np.exp(-t * 1.2) * .2, 28.8, dry=True)
-crash(28.8, .14)
+add(np.sin(2*np.pi*hz(24)*t) * np.exp(-t * 1.2) * .2, END, dry=True)
+crash(END, .14)
 for k, m in enumerate([84, 88, 91, 96]):  # ניצוץ קטן כשהכתובת מופיעה
-    add(bell(m, .3, .5), 30.4 + k * .09, pan=.3)
+    add(bell(m, .3, .5), END + 1.6 + k * .09, pan=.3)
 
 # טיקים של לחיצה
 for tp in TAPS:

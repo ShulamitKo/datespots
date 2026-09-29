@@ -30,7 +30,7 @@
 
   /* step progress */
   .progress { position:absolute; right:96px; top:840px; display:flex; gap:12px; direction:rtl; }
-  .progress .seg { width:118px; height:10px; border-radius:6px; background:#f3d3df; overflow:hidden; }
+  .progress .seg { width:96px; height:10px; border-radius:6px; background:#f3d3df; overflow:hidden; }
   .progress .seg i { display:block; height:100%; width:0; background:#FF4E8C; border-radius:6px; }
   .progress-label { position:absolute; right:96px; top:868px; font-size:24px; color:#9ca3af; font-weight:500; }
 
@@ -64,6 +64,8 @@
     <div class="layer" id="L_fn"><img src="out/s03_filter_nature.png"></div>
     <div class="layer" id="L_fb"><img src="out/s03_filter_both.png"></div>
     <div class="layer" id="L_res"><img src="out/s04_results.png"></div>
+    <div class="layer" id="L_map"><img src="out/s04_map.png"></div>
+    <div class="layer" id="L_mapp"><img src="out/s04_map_popup.png"></div>
     <div class="layer" id="L_spot"><img id="spotimg" src="out/s05_spot_spliced.png"></div>
     <div class="layer" id="L_list2"><img src="out/s01_list.png"></div>
     <div class="layer" id="L_add"><img src="out/s06_add.png"></div>
@@ -80,10 +82,11 @@
   <div class="cap" id="c1"><div class="step">01</div><h2>כל המקומות<br>במקום אחד</h2><p>רשימה של מקומות לדייטים מכל הארץ, עם קטגוריה, מחיר, כשרות והתאמה לדייט ראשון.</p></div>
   <div class="cap" id="c2"><div class="step">02</div><h2>חיפוש מהיר</h2><p>התוצאות מתעדכנות תוך כדי הקלדה - לפי שם המקום או הכתובת.</p></div>
   <div class="cap" id="c3"><div class="step">03</div><h2>סינון מתקדם</h2><p>סוג מקום, אזור, טווח מחירים, כשרות ומתאים לדייט ראשון. אפשר לשלב כמה מסננים יחד.</p></div>
-  <div class="cap" id="c4"><div class="step">04</div><h2>דף מקום מלא</h2><p>כל הפרטים, הערות, ביקורות מהקהילה וטופס לכתיבת ביקורת.</p></div>
-  <div class="cap" id="c5"><div class="step">05</div><h2>כל אחד יכול<br>להוסיף מקום</h2><p>בלי הרשמה. כל מקום חדש עובר בדיקת מנהלים, עם הגבלת קצב והגנה מפני הצפה.</p></div>
+  <div class="cap" id="c4"><div class="step">04</div><h2>הכל על המפה</h2><p>כל התוצאות על מפה אחת. לחיצה על מקום מקרבת אליו, ומשם לפרטים המלאים.</p></div>
+  <div class="cap" id="c5"><div class="step">05</div><h2>דף מקום מלא</h2><p>כל הפרטים, הערות, ביקורות מהקהילה וטופס לכתיבת ביקורת.</p></div>
+  <div class="cap" id="c6"><div class="step">06</div><h2>כל אחד יכול<br>להוסיף מקום</h2><p>בלי הרשמה. כל מקום חדש עובר בדיקת מנהלים, עם הגבלת קצב והגנה מפני הצפה.</p></div>
 
-  <div class="progress" id="progress"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
+  <div class="progress" id="progress"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
 
   <div class="hero" id="outro">
     <div class="logo">Date<b>Spots</b></div>
@@ -107,10 +110,10 @@ window.setStill = v => { STILL = v; };
 window.setPos = p => { POS = p; };
 
 // שלבים: [התחלה, סוף] - כל גבול יושב על תחילת תיבה או חצי תיבה במוזיקה
-const STEPS = [[3.6,7.2],[7.2,12.0],[12.0,19.2],[19.2,24.0],[24.0,28.8]];
+const STEPS = [[3.6,7.2],[7.2,12.0],[12.0,19.2],[19.2,24.0],[24.0,28.8],[28.8,33.6]];
 const SCREENS = [['L_list',0],['L_sa',8.4],['L_sb',9.0],['L_sc',9.6],['L_list',11.4],['L_fo',12.9],['L_fn',14.55],['L_fb',15.75],['L_res',16.95],
-  ['L_spot',19.5],['L_list2',24.0],['L_add',24.9],['L_addf',26.4]];
-const TAPS = [['search',7.8],['filter',12.6],['nature',14.4],['firstdate',15.6],['card',19.2],['add',24.6]];
+  ['L_map',19.5],['L_mapp',21.9],['L_spot',24.3],['L_list2',28.8],['L_add',29.7],['L_addf',31.2]];
+const TAPS = [['search',7.8],['filter',12.6],['nature',14.4],['firstdate',15.6],['maptab',19.2],['mapcard',21.6],['more',24.0],['add',29.4]];
 window.TAPS = TAPS;
 const XF = .28;
 
@@ -131,13 +134,13 @@ window.render = t => {
   [...$('chips').children].forEach((c,i) => { const k = back(pr(t, 1.2 + i*.15, .45)); c.style.opacity = eo(pr(t,1.2+i*.15,.25)); c.style.transform = `scale(${.6+.4*k})`; });
 
   // סיום
-  const oA = eo((t-28.9)/.6);
+  const oA = eo((t-33.7)/.6);
   $('outro').style.opacity = oA; $('outro').style.transform = `translateY(${(1-oA)*40}px)`;
-  [...$('feats').children].forEach((c,i) => { const k = back(pr(t, 29.4 + i*.3, .45)); c.style.opacity = eo(pr(t,29.4+i*.3,.25)); c.style.transform = `scale(${.6+.4*k})`; });
-  const u = back(pr(t,30.4,.6)); $('url').style.opacity = eo(pr(t,30.4,.3));
-  $('url').style.transform = `scale(${(.7+.3*u) * (1 + Math.max(0, Math.sin((t-31.2)*Math.PI/BEAT))*.03*(t>31.2))})`;
-  const inSteps = t > 3.6 && t < 28.9;
-  $('brand').style.opacity = inSteps ? Math.min(eo((t-3.6)/.4), 1-eo((t-28.6)/.3)) : 0;
+  [...$('feats').children].forEach((c,i) => { const k = back(pr(t, 34.2 + i*.3, .45)); c.style.opacity = eo(pr(t,34.2+i*.3,.25)); c.style.transform = `scale(${.6+.4*k})`; });
+  const u = back(pr(t,35.2,.6)); $('url').style.opacity = eo(pr(t,35.2,.3));
+  $('url').style.transform = `scale(${(.7+.3*u) * (1 + Math.max(0, Math.sin((t-36.0)*Math.PI/BEAT))*.03*(t>36.0))})`;
+  const inSteps = t > 3.6 && t < 33.7;
+  $('brand').style.opacity = inSteps ? Math.min(eo((t-3.6)/.4), 1-eo((t-33.4)/.3)) : 0;
 
   // טלפון: כניסה + "נשימה" עדינה
   const pe = eo((t-.3)/1.0);
@@ -151,7 +154,7 @@ window.render = t => {
     el.style.opacity = o; el.style.transform = `translateX(${(1-o)*-40}px)`;
     $('progress').children[i].firstElementChild.style.width = (eio(pr(t,a,b-a))*100) + '%';
   });
-  const pv = inSteps ? Math.min(eo((t-3.6)/.5), 1-eo((t-28.6)/.3)) : 0;
+  const pv = inSteps ? Math.min(eo((t-3.6)/.5), 1-eo((t-33.4)/.3)) : 0;
   $('progress').style.opacity = pv;
 
   // מסכים בהצלבה
@@ -166,7 +169,7 @@ window.render = t => {
   // גלילות
   const down = eio(pr(t,4.2,2.4)), up = eio(pr(t,6.7,.45));
   $('listimg').style.transform = `translateY(${-(down*(1-up))*640}px)`;
-  $('spotimg').style.transform = `translateY(${-eio(pr(t,20.4,3.0))*430}px)`;
+  $('spotimg').style.transform = `translateY(${-eio(pr(t,25.2,3.0))*430}px)`;
 
   // לחיצות
   let tapO = 0, tapS = 1, tx = 0, ty = 0;

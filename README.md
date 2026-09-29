@@ -13,7 +13,7 @@
 
 **[לאתר החי →](https://datespots.vercel.app/)**
 
-<img src="docs/demo.gif" alt="הדגמה של DateSpots: גלילה ברשימה, חיפוש, סינון, דף מקום והוספת מקום" width="820">
+<img src="docs/demo.gif" alt="הדגמה של DateSpots: גלילה ברשימה, חיפוש, סינון, תצוגת מפה, דף מקום והוספת מקום" width="820">
 
 🎬 [הסרטון המלא עם מוזיקה (MP4)](docs/demo.mp4) · [הקוד שמייצר אותו](demo-video/)
 
