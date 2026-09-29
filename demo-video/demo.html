@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=block" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1920px; height:1080px; overflow:hidden; font-family:'Heebo',sans-serif; }
+  #stage { position:relative; width:1920px; height:1080px; overflow:hidden; background:#fff7fa; }
+  .blob { position:absolute; border-radius:50%; filter:blur(90px); }
+  .brand { position:absolute; top:56px; right:96px; font-size:40px; font-weight:900; color:#1f2937; direction:ltr; letter-spacing:-1px; }
+  .brand b { color:#FF4E8C; }
+
+  /* phone */
+  .phone { position:absolute; left:250px; top:82px; width:438px; height:917px; border-radius:64px; background:#111;
+    padding:14px; box-shadow: 0 50px 100px -20px #ff4e8c55, 0 30px 60px -30px #0006; }
+  .screen { position:relative; width:410px; height:889px; border-radius:50px; overflow:hidden; background:#fff; }
+  .notch { position:absolute; top:12px; left:50%; width:120px; height:32px; margin-left:-60px; background:#111; border-radius:20px; z-index:20; }
+  .layer { position:absolute; inset:0; opacity:0; background:#fff; }
+  .layer img { position:absolute; top:44px; left:0; width:410px; }
+  .tap { position:absolute; width:70px; height:70px; margin:-35px 0 0 -35px; border-radius:50%; z-index:30;
+    background: radial-gradient(circle, #ff4e8c66 0 40%, transparent 41%); border:4px solid #ff4e8c; opacity:0; }
+
+  /* captions */
+  .cap { position:absolute; right:96px; top:300px; width:780px; opacity:0; }
+  .step { display:inline-flex; align-items:center; gap:14px; font-size:28px; font-weight:700; color:#FF4E8C;
+    background:#fff; border:2px solid #ffd0e1; border-radius:40px; padding:8px 24px; }
+  .cap h2 { font-size:84px; font-weight:900; color:#1f2937; line-height:1.05; margin-top:26px; letter-spacing:-1px; }
+  .cap p { font-size:36px; color:#4b5563; margin-top:24px; line-height:1.45; }
+
+  /* step progress */
+  .progress { position:absolute; right:96px; top:840px; display:flex; gap:12px; direction:rtl; }
+  .progress .seg { width:118px; height:10px; border-radius:6px; background:#f3d3df; overflow:hidden; }
+  .progress .seg i { display:block; height:100%; width:0; background:#FF4E8C; border-radius:6px; }
+  .progress-label { position:absolute; right:96px; top:868px; font-size:24px; color:#9ca3af; font-weight:500; }
+
+  /* intro / outro */
+  .hero { position:absolute; right:96px; top:250px; width:840px; opacity:0; }
+  .hero .logo { font-size:150px; font-weight:900; color:#1f2937; direction:ltr; text-align:right; letter-spacing:-4px; line-height:1; }
+  .hero .logo b { color:#FF4E8C; }
+  .hero p { font-size:44px; color:#4b5563; margin-top:26px; line-height:1.35; }
+  .chips { display:flex; flex-wrap:wrap; gap:14px; margin-top:44px; direction:ltr; justify-content:flex-end; }
+  .chips span { font-size:26px; font-weight:700; color:#374151; background:#fff; border:2px solid #e5e7eb; border-radius:30px; padding:8px 22px; display:inline-block; }
+  .url { display:inline-block; margin-top:44px; font-size:44px; font-weight:800; color:#fff; background:#FF4E8C; border-radius:60px; padding:18px 44px; direction:ltr;
+    box-shadow:0 20px 50px -10px #ff4e8c99; }
+  .feats { display:flex; gap:16px; margin-top:34px; justify-content:flex-end; flex-wrap:wrap; }
+  .feats span { font-size:30px; font-weight:700; color:#be185d; background:#ffe4ee; border-radius:30px; padding:8px 24px; display:inline-block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1" style="width:900px;height:700px;background:#ffd6e6;right:-150px;top:-200px"></div>
+  <div class="blob" id="b2" style="width:800px;height:800px;background:#efe3ff;left:-250px;bottom:-300px"></div>
+  <div class="blob" id="b3" style="width:500px;height:500px;background:#ffe9d6;right:500px;bottom:-250px;opacity:.7"></div>
+
+  <div class="brand" id="brand">Date<b>Spots</b></div>
+
+  <div class="phone" id="phone"><div class="screen" id="screen"><div class="notch"></div>
+    <div class="layer" id="L_list"><img id="listimg" src="out/s01_list_tall.png"></div>
+    <div class="layer" id="L_sa"><img src="out/s02_search_a.png"></div>
+    <div class="layer" id="L_sb"><img src="out/s02_search_b.png"></div>
+    <div class="layer" id="L_sc"><img src="out/s02_search_c.png"></div>
+    <div class="layer" id="L_fo"><img src="out/s03_filter_open.png"></div>
+    <div class="layer" id="L_fn"><img src="out/s03_filter_nature.png"></div>
+    <div class="layer" id="L_fb"><img src="out/s03_filter_both.png"></div>
+    <div class="layer" id="L_res"><img src="out/s04_results.png"></div>
+    <div class="layer" id="L_spot"><img id="spotimg" src="out/s05_spot_spliced.png"></div>
+    <div class="layer" id="L_list2"><img src="out/s01_list.png"></div>
+    <div class="layer" id="L_add"><img src="out/s06_add.png"></div>
+    <div class="layer" id="L_addf"><img src="out/s06_add_filled.png"></div>
+    <div class="tap" id="tap"></div>
+  </div></div>
+
+  <div class="hero" id="intro">
+    <div class="logo" id="ilogo">Date<b>Spots</b></div>
+    <p id="ip">פלטפורמה קהילתית למציאת מקומות לדייטים ברחבי הארץ - מפה, סינון חכם, ביקורות והוספת מקומות.</p>
+    <div class="chips" id="chips"><span>React</span><span>TypeScript</span><span>Vite</span><span>Tailwind</span><span>Supabase</span><span>Leaflet</span></div>
+  </div>
+
+  <div class="cap" id="c1"><div class="step">01</div><h2>כל המקומות<br>במקום אחד</h2><p>רשימה של מקומות לדייטים מכל הארץ, עם קטגוריה, מחיר, כשרות והתאמה לדייט ראשון.</p></div>
+  <div class="cap" id="c2"><div class="step">02</div><h2>חיפוש מהיר</h2><p>התוצאות מתעדכנות תוך כדי הקלדה - לפי שם המקום או הכתובת.</p></div>
+  <div class="cap" id="c3"><div class="step">03</div><h2>סינון מתקדם</h2><p>סוג מקום, אזור, טווח מחירים, כשרות ומתאים לדייט ראשון. אפשר לשלב כמה מסננים יחד.</p></div>
+  <div class="cap" id="c4"><div class="step">04</div><h2>דף מקום מלא</h2><p>כל הפרטים, הערות, ביקורות מהקהילה וטופס לכתיבת ביקורת.</p></div>
+  <div class="cap" id="c5"><div class="step">05</div><h2>כל אחד יכול<br>להוסיף מקום</h2><p>בלי הרשמה. כל מקום חדש עובר בדיקת מנהלים, עם הגבלת קצב והגנה מפני הצפה.</p></div>
+
+  <div class="progress" id="progress"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
+
+  <div class="hero" id="outro">
+    <div class="logo">Date<b>Spots</b></div>
+    <div class="feats" id="feats"><span>חינם</span><span>בלי הרשמה</span><span>טלפון ומחשב</span></div>
+    <div class="url" id="url">datespots.vercel.app</div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x,a=0,b=1) => Math.max(a, Math.min(b, x));
+const eo = x => 1 - Math.pow(1 - clamp(x), 3);
+const eio = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2; };
+const back = x => { x = clamp(x); const c1=1.70158, c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+const pr = (t,a,d) => clamp((t-a)/d);
+const K = 410/430;                 // פיקסל CSS באפליקציה -> פיקסל במסך הטלפון
+const BEAT = 0.6;                  // 100 BPM - כל המעברים והלחיצות יושבים על הפעמות
+let POS = {};
+let STILL = false;                 // ב-GIF: רקע וטלפון סטטיים, כדי שהקובץ יהיה קטן
+window.setStill = v => { STILL = v; };
+window.setPos = p => { POS = p; };
+
+// שלבים: [התחלה, סוף] - כל גבול יושב על תחילת תיבה או חצי תיבה במוזיקה
+const STEPS = [[3.6,7.2],[7.2,12.0],[12.0,19.2],[19.2,24.0],[24.0,28.8]];
+const SCREENS = [['L_list',0],['L_sa',8.4],['L_sb',9.0],['L_sc',9.6],['L_list',11.4],['L_fo',12.9],['L_fn',14.55],['L_fb',15.75],['L_res',16.95],
+  ['L_spot',19.5],['L_list2',24.0],['L_add',24.9],['L_addf',26.4]];
+const TAPS = [['search',7.8],['filter',12.6],['nature',14.4],['firstdate',15.6],['card',19.2],['add',24.6]];
+window.TAPS = TAPS;
+const XF = .28;
+
+function capWin(t,a,b){ const i = eo((t-a-.1)/.5), o = 1 - eio((t-(b-.35))/.35); return Math.max(0, Math.min(i, o)); }
+
+window.render = t => {
+  // רקע חי
+  const tm = STILL ? 0 : t;
+  $('b1').style.transform = `translate(${Math.sin(tm*.35)*60}px, ${Math.cos(tm*.3)*40}px)`;
+  $('b2').style.transform = `translate(${Math.cos(tm*.25)*70}px, ${Math.sin(tm*.4)*50}px)`;
+  $('b3').style.transform = `translate(${Math.sin(tm*.5)*50}px, ${Math.cos(tm*.45)*30}px)`;
+
+  // פתיחה
+  const iOut = 1 - eio((t-3.2)/.4);
+  $('intro').style.opacity = Math.min(eo((t-.2)/.5), iOut);
+  const lg = back(pr(t,.2,.7)); $('ilogo').style.transform = `translateY(${(1-lg)*60}px)`;
+  $('ip').style.opacity = eo(pr(t,.7,.5)); $('ip').style.transform = `translateY(${(1-eo(pr(t,.7,.5)))*30}px)`;
+  [...$('chips').children].forEach((c,i) => { const k = back(pr(t, 1.2 + i*.15, .45)); c.style.opacity = eo(pr(t,1.2+i*.15,.25)); c.style.transform = `scale(${.6+.4*k})`; });
+
+  // סיום
+  const oA = eo((t-28.9)/.6);
+  $('outro').style.opacity = oA; $('outro').style.transform = `translateY(${(1-oA)*40}px)`;
+  [...$('feats').children].forEach((c,i) => { const k = back(pr(t, 29.4 + i*.3, .45)); c.style.opacity = eo(pr(t,29.4+i*.3,.25)); c.style.transform = `scale(${.6+.4*k})`; });
+  const u = back(pr(t,30.4,.6)); $('url').style.opacity = eo(pr(t,30.4,.3));
+  $('url').style.transform = `scale(${(.7+.3*u) * (1 + Math.max(0, Math.sin((t-31.2)*Math.PI/BEAT))*.03*(t>31.2))})`;
+  const inSteps = t > 3.6 && t < 28.9;
+  $('brand').style.opacity = inSteps ? Math.min(eo((t-3.6)/.4), 1-eo((t-28.6)/.3)) : 0;
+
+  // טלפון: כניסה + "נשימה" עדינה
+  const pe = eo((t-.3)/1.0);
+  const bob = STILL ? 0 : Math.sin(t*1.3)*6, tilt = STILL ? 0 : Math.sin(t*.7)*.6;
+  $('phone').style.transform = `translateY(${(1-pe)*120 + bob}px) rotate(${(1-pe)*-4 + tilt}deg)`;
+  $('phone').style.opacity = pe;
+
+  // כיתובים + פס התקדמות
+  STEPS.forEach(([a,b],i) => {
+    const o = capWin(t,a,b), el = $('c'+(i+1));
+    el.style.opacity = o; el.style.transform = `translateX(${(1-o)*-40}px)`;
+    $('progress').children[i].firstElementChild.style.width = (eio(pr(t,a,b-a))*100) + '%';
+  });
+  const pv = inSteps ? Math.min(eo((t-3.6)/.5), 1-eo((t-28.6)/.3)) : 0;
+  $('progress').style.opacity = pv;
+
+  // מסכים בהצלבה
+  let i = 0; SCREENS.forEach(([, at], j) => { if (t >= at) i = j; });
+  const [curId, at] = SCREENS[i], k = i === 0 ? 1 : eio((t - at) / XF);
+  const prevId = i > 0 ? SCREENS[i - 1][0] : null;
+  document.querySelectorAll('.layer').forEach(l => {
+    l.style.opacity = l.id === curId ? k : l.id === prevId ? 1 : 0;
+    l.style.zIndex = l.id === curId ? 2 : 1;
+  });
+
+  // גלילות
+  const down = eio(pr(t,4.2,2.4)), up = eio(pr(t,6.7,.45));
+  $('listimg').style.transform = `translateY(${-(down*(1-up))*640}px)`;
+  $('spotimg').style.transform = `translateY(${-eio(pr(t,20.4,3.0))*430}px)`;
+
+  // לחיצות
+  let tapO = 0, tapS = 1, tx = 0, ty = 0;
+  for (const [name,at] of TAPS) {
+    const d = t - at;
+    if (d >= -.25 && d < .6 && POS[name]) {
+      tx = POS[name].x*K; ty = POS[name].y*K + 44;
+      tapO = d < 0 ? eo((d+.25)/.25) : 1 - eo(d/.6);
+      tapS = d < 0 ? .7 + .3*eo((d+.25)/.25) : 1 + d*1.2;
+    }
+  }
+  const tap = $('tap'); tap.style.opacity = tapO; tap.style.left = tx+'px'; tap.style.top = ty+'px'; tap.style.transform = `scale(${tapS})`;
+};
+</script>
+</body>
+</html>
