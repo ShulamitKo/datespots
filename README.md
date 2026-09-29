@@ -13,9 +13,9 @@
 
 **[לאתר החי →](https://datespots.vercel.app/)**
 
-<img src="docs/demo.gif" alt="הדגמה של DateSpots: גלילה ברשימה, חיפוש, סינון, תצוגת מפה, דף מקום והוספת מקום" width="820">
+https://github.com/user-attachments/assets/e48e8b6e-8362-4257-97fc-2b6ba854ba28
 
-🎬 [הסרטון המלא עם מוזיקה (MP4)](docs/demo.mp4) · [הקוד שמייצר אותו](demo-video/)
+🎬 [הורדת הסרטון (MP4)](docs/demo.mp4) · [גרסת GIF](docs/demo.gif) · [הקוד שמייצר אותו](demo-video/)
 
 </div>
 
