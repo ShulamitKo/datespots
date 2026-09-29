@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import Map from '@/components/Map'
 import { logEvent } from "@/lib/logging";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { type KosherType } from '@/lib/types';
 import { ReportButton } from '@/components/ReportButton';
 import { isRateLimitError } from '@/lib/rateLimit';
@@ -62,6 +63,7 @@ export default function SpotDetails() {
   const [error, setError] = useState<Error | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedSpot, setEditedSpot] = useState<Spot | null>(null);
+  usePageTitle(spot?.name);
   const [reviewForm, setReviewForm] = useState<ReviewForm>({
     reviewer_name: '',
     rating: 5,
@@ -248,7 +250,7 @@ export default function SpotDetails() {
   if (!spot) return null;
 
   return (
-    <div className="spot-details-container bg-gray-50/60">
+    <main id="main-content" tabIndex={-1} className="spot-details-container bg-gray-50/60 outline-none">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="flex justify-between items-start gap-3 mb-4 sm:mb-6">
           <div className="flex flex-col gap-2 min-w-0">
@@ -346,7 +348,7 @@ export default function SpotDetails() {
                         onValueChange={(value: "מסעדה" | "בית קפה" | "בר" | "אטרקציה" | "טבע" | "אחר") => 
                           setEditedSpot(prev => prev ? { ...prev, category: value } : null)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger id="category">
                           <SelectValue placeholder="בחר קטגוריה" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -377,7 +379,7 @@ export default function SpotDetails() {
                               });
                             }}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger id="kosher_type">
                               <SelectValue placeholder="בחר סוג כשרות" />
                             </SelectTrigger>
                             <SelectContent className="bg-white">
@@ -407,7 +409,7 @@ export default function SpotDetails() {
                         onValueChange={(value: "שקט" | "בינוני" | "רועש") => 
                           setEditedSpot(prev => prev ? { ...prev, noise_level: value } : null)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger id="noise_level">
                           <SelectValue placeholder="בחר רמת רעש" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -425,7 +427,7 @@ export default function SpotDetails() {
                         onValueChange={(value: "ירושלים" | "מרכז" | "צפון" | "דרום") => 
                           setEditedSpot(prev => prev ? { ...prev, region: value } : null)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger id="region">
                           <SelectValue placeholder="בחר אזור" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -444,7 +446,7 @@ export default function SpotDetails() {
                         onValueChange={(value: "חינם" | "זול" | "בינוני" | "יקר") => 
                           setEditedSpot(prev => prev ? { ...prev, price_range: value } : null)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger id="price_range">
                           <SelectValue placeholder="בחר טווח מחירים" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -709,7 +711,8 @@ export default function SpotDetails() {
                             </p>
                           </div>
                           <Badge variant="outline" className="text-sm sm:text-base text-yellow-500 bg-yellow-50 flex-shrink-0">
-                            {Array.from({ length: review.rating }).map(() => "⭐").join("")}
+                            <span aria-hidden="true">{Array.from({ length: review.rating }).map(() => "⭐").join("")}</span>
+                            <span className="sr-only">דירוג {review.rating} מתוך 5</span>
                           </Badge>
                         </div>
                         <p className="mt-2 text-gray-700 leading-relaxed break-words">{review.content}</p>
@@ -723,9 +726,10 @@ export default function SpotDetails() {
                 <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900">הוספת ביקורת</h2>
                 <form onSubmit={handleSubmitReview} className="space-y-4">
                   <div>
-                    <Label htmlFor="reviewer_name">שם</Label>
+                    <Label htmlFor="reviewer_name">שם או כינוי</Label>
                     <Input
                       id="reviewer_name"
+                      aria-describedby="reviewer_name_hint"
                       value={reviewForm.reviewer_name}
                       onChange={(e) => setReviewForm({ ...reviewForm, reviewer_name: e.target.value })}
                       required
@@ -733,7 +737,7 @@ export default function SpotDetails() {
                   </div>
 
                   <div>
-                    <Label htmlFor="rating">דירוג</Label>
+                    <Label htmlFor="rating">דירוג (1 עד 5)</Label>
                     <Input
                       id="rating"
                       type="number"
@@ -765,6 +769,12 @@ export default function SpotDetails() {
                     />
                   </div>
 
+                  <p id="reviewer_name_hint" className="text-xs text-gray-600">
+                    הביקורת והשם יפורסמו לכל גולשי האתר. אפשר לכתוב כינוי, ומומלץ לא לכלול פרטים מזהים.
+                    לצורך הגבלת קצב ומניעת ספאם, כתובת ה-IP נשמרת לזמן קצר (עד יממה).{' '}
+                    <Link to="/privacy" className="underline">מדיניות הפרטיות</Link>
+                  </p>
+
                   <Button type="submit" className="w-full h-11 rounded-full">
                     שליחת ביקורת
                   </Button>
@@ -774,6 +784,6 @@ export default function SpotDetails() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

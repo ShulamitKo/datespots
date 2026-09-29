@@ -12,6 +12,7 @@ import type { Spot } from '@/lib/supabase/types'
 import { CategoryType, RegionType, PriceRangeType, NoiseLevel, KosherType } from '@/lib/types'
 import { spotsTable } from '@/lib/supabase/config'
 import { logEvent } from '@/lib/logging'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import Map from '@/components/Map'
 import { isRateLimitError } from '@/lib/rateLimit'
 
@@ -41,6 +42,7 @@ type FormSpot = {
 
 export default function AddSpot() {
   const navigate = useNavigate()
+  usePageTitle('הוספת מקום חדש')
   const { toast } = useToast()
   
   const [newSpot, setNewSpot] = useState<FormSpot>({
@@ -172,7 +174,7 @@ export default function AddSpot() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start isolate">
+      <main id="main-content" tabIndex={-1} className="outline-none max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start isolate">
         <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm">
           <form id="add-spot-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -226,7 +228,7 @@ export default function AddSpot() {
                 onValueChange={(value: "בית קפה" | "מסעדה" | "בר" | "אטרקציה" | "טבע" | "אחר") => 
                   setNewSpot({ ...newSpot, category: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="category">
                   <SelectValue placeholder="בחר קטגוריה" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -250,7 +252,7 @@ export default function AddSpot() {
                     onValueChange={(value: string) => 
                       setNewSpot(prev => ({ ...prev, kosher_type: value as "מהדרין" | "רבנות" | "?" }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="kosher_type">
                       <SelectValue placeholder="בחר רמת כשרות" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
@@ -281,7 +283,7 @@ export default function AddSpot() {
                 onValueChange={(value: "שקט" | "בינוני" | "רועש") => 
                   setNewSpot({ ...newSpot, noise_level: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="noise_level">
                   <SelectValue placeholder="בחר רמת רעש" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -299,7 +301,7 @@ export default function AddSpot() {
                 onValueChange={(value: "ירושלים" | "מרכז" | "צפון" | "דרום") => 
                   setNewSpot({ ...newSpot, region: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="region">
                   <SelectValue placeholder="בחר אזור" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -318,7 +320,7 @@ export default function AddSpot() {
                 onValueChange={(value: "חינם" | "זול" | "בינוני" | "יקר") => 
                   setNewSpot({ ...newSpot, price_range: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger id="price_range">
                   <SelectValue placeholder="בחר טווח מחירים" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
@@ -403,9 +405,14 @@ export default function AddSpot() {
 
         <Card className="p-4 sm:p-6 rounded-2xl border-gray-100 shadow-sm lg:sticky lg:top-24">
           <div className="space-y-2 mb-4">
-            <Label>מיקום על המפה</Label>
-            <p className="text-sm text-muted-foreground">* יש לבחור מיקום על המפה</p>
-            <p className="text-sm text-muted-foreground">לחץ על המפה כדי לבחור מיקום, או השתמש בחיפוש </p>
+            <h2 className="text-sm font-medium">מיקום על המפה</h2>
+            <p className="text-sm text-muted-foreground">* יש לבחור מיקום</p>
+            <p className="text-sm text-muted-foreground">הקלידו כתובת בשדה החיפוש ולחצו Enter, או לחצו על המפה במקום המדויק</p>
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {newSpot.latitude === 32.0853 && newSpot.longitude === 34.7818
+                ? 'עדיין לא נבחר מיקום'
+                : `נבחר מיקום: ${newSpot.latitude.toFixed(5)}, ${newSpot.longitude.toFixed(5)}`}
+            </p>
           </div>
           <div className="h-[360px] sm:h-[480px] lg:h-[560px] rounded-xl overflow-hidden border border-gray-100">
             <Map 
@@ -417,7 +424,7 @@ export default function AddSpot() {
             />
           </div>
         </Card>
-      </div>
+      </main>
     </div>
   );
 } 

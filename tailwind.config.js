@@ -14,7 +14,7 @@ export default {
         background: "#ffffff",
         foreground: "#1f2937",
         primary: {
-          DEFAULT: "#FF4E8C",
+          DEFAULT: "#CC1F66", // ניגודיות 5.3:1 מול טקסט לבן (WCAG AA)
           foreground: "#ffffff",
         },
         secondary: {
@@ -26,7 +26,7 @@ export default {
           foreground: "#6b7280",
         },
         accent: {
-          DEFAULT: "#FF4E8C",
+          DEFAULT: "#CC1F66", // ניגודיות 5.3:1 מול טקסט לבן (WCAG AA)
           foreground: "#ffffff",
         },
         destructive: {

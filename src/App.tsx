@@ -9,6 +9,8 @@ import SpotDetails from "./pages/SpotDetails";
 import AddSpot from "./pages/AddSpot";
 import Footer from '@/components/Footer'
 import AdminReports from "./pages/AdminReports";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AccessibilityStatement from "./pages/AccessibilityStatement";
 import { useState, useEffect } from "react";
 import { adminTable } from "@/lib/supabase/config";
 import { cleanupExpiredRateLimits } from "@/lib/rateLimit";
@@ -67,10 +69,26 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <a
+            href="#main-content"
+            className="skip-link"
+            onClick={(e) => {
+              const main = document.getElementById('main-content');
+              if (main) {
+                e.preventDefault();
+                main.focus();
+                main.scrollIntoView();
+              }
+            }}
+          >
+            דלג לתוכן הראשי
+          </a>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/spot/:id" element={<SpotDetails />} />
             <Route path="/add-spot" element={<AddSpot />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/accessibility" element={<AccessibilityStatement />} />
             <Route
               path="/admin/reports" 
               element={

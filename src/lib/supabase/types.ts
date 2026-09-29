@@ -47,7 +47,7 @@ export type Report = {
   spot_id: string;
   report_type: 'spam' | 'inappropriate' | 'closed' | 'duplicate' | 'other';
   description: string;
-  reporter_ip: string;
+  reporter_ip: string | null;
   status: 'pending' | 'in_review' | 'resolved' | 'rejected';
   created_at: string;
   admin_notes?: string;

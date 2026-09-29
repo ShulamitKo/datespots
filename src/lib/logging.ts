@@ -11,31 +11,19 @@ export const logTypes = {
 export type LogType = keyof typeof logTypes;
 export type LogSeverity = 'info' | 'warning' | 'error';
 
-const getUserIP = async (): Promise<string> => {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error('Error getting IP:', error);
-    return 'unknown';
-  }
-};
-
 export const logEvent = async (
   type: LogType,
   data: Record<string, unknown>,
   severity: LogSeverity = 'info'
 ) => {
   try {
-    const ip = await getUserIP();
-    
+    // כתובת ה-IP לא נשלחת מהדפדפן ולא נשאלת משירות חיצוני:
+    // השרת רושם אותה בעצמו (טריגר logs_set_ip), ונמחקת אחרי 90 יום (purge_personal_data)
     await supabase.from('logs').insert({
       type: logTypes[type],
       data,
       severity,
       timestamp: new Date().toISOString(),
-      ip_address: ip,
       user_agent: navigator.userAgent
     });
 

@@ -55,9 +55,12 @@ function MapClickHandler({ onMapClick }: { onMapClick?: MapProps['onMapClick'] }
 }
 
 // Component to handle search
-function SearchControl() {
+// כשיש onMapClick (בחירת מיקום), תוצאת החיפוש גם נבחרת כמיקום - כך אפשר לבחור מיקום
+// בלי עכבר, רק במקלדת או בקורא מסך (נגישות)
+function SearchControl({ onSelect }: { onSelect?: MapProps['onMapClick'] }) {
   const map = useMap();
   const [searchQuery, setSearchQuery] = useState('');
+  const [status, setStatus] = useState('');
 
   const handleSearch = async () => {
     if (!searchQuery) return;
@@ -69,33 +72,49 @@ function SearchControl() {
       const data = await response.json();
 
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        map.flyTo([parseFloat(lat), parseFloat(lon)], 16, {
+        const { lat, lon, display_name } = data[0];
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lon);
+        map.flyTo([latNum, lngNum], 16, {
           duration: 1.5,
           easeLinearity: 0.25
         });
+        onSelect?.({ lngLat: { lng: lngNum, lat: latNum } });
+        setStatus(`נמצאה כתובת: ${display_name}`);
+      } else {
+        setStatus('לא נמצאה כתובת מתאימה');
       }
     } catch (error) {
       console.error('Error searching location:', error);
+      setStatus('שגיאה בחיפוש הכתובת');
     }
   };
 
   return (
     <div className="absolute top-2 right-2 left-2 z-[1000] flex gap-2">
+      <span className="sr-only" role="status">{status}</span>
       <Input
         type="text"
+        aria-label="חיפוש כתובת"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch();
+          }
+        }}
         placeholder="חפש כתובת..."
         className="bg-white/90 backdrop-blur-sm border-2 shadow-lg"
         dir="rtl"
       />
       <Button
+        type="button"
         onClick={handleSearch}
+        aria-label="חיפוש"
         className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
       >
-        <Search className="w-4 h-4" />
+        <Search className="w-4 h-4" aria-hidden="true" />
       </Button>
     </div>
   );
@@ -165,7 +184,7 @@ export default function Map({ spots = [], center = [32.0853, 34.7818], zoom = 12
           ) : null
         ))}
         {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
-        {showSearch && <SearchControl />}
+        {showSearch && <SearchControl onSelect={onMapClick} />}
         <MapStatePreserver spots={spots} />
       </MapContainer>
     </div>

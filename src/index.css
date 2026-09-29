@@ -279,3 +279,56 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+/* ============================================================
+   נגישות (ת"י 5568 / WCAG 2.0 AA)
+   ============================================================ */
+
+/* קישור "דלג לתוכן הראשי" - מוסתר עד שמגיעים אליו ב-Tab */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10000;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 3px solid #f472b6;
+  outline-offset: 2px;
+}
+
+/* מסגרת פוקוס בולטת לכל רכיב שמגיעים אליו במקלדת */
+:focus-visible {
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.leaflet-container a:focus-visible,
+.leaflet-marker-icon:focus-visible {
+  outline: 3px solid #db2777;
+  outline-offset: 2px;
+}
+
+/* קישורים בתוך טקסט במסמכים המשפטיים מסומנים גם בקו תחתון ולא רק בצבע */
+.legal-content a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: hsl(var(--primary));
+}
+
+/* ביטול אנימציות למי שהגדיר העדפה להפחתת תנועה */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
